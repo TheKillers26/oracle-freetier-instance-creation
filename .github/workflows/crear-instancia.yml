@@ -1,0 +1,62 @@
+name: Crear instancia Oracle
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: crear-instancia
+  cancel-in-progress: true
+
+jobs:
+  intentar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Preparar archivos de configuración
+        run: |
+          echo "${{ secrets.OCI_CONFIG_CONTENT }}" > oci_config
+          echo "${{ secrets.OCI_PRIVATE_KEY }}" > oci_api_private_key.pem
+          cat > oci.env << EOF
+          OCI_CONFIG=$PWD/oci_config
+          OCT_FREE_AD=AD-1
+          DISPLAY_NAME=servidor-minecraft
+          OCI_COMPUTE_SHAPE=VM.Standard.A1.Flex
+          SECOND_MICRO_INSTANCE=False
+          REQUEST_WAIT_TIME_SECS=99999
+          SSH_AUTHORIZED_KEYS_FILE=$PWD/id_rsa.pub
+          OCI_SUBNET_ID=${{ secrets.OCI_SUBNET_ID }}
+          OCI_IMAGE_ID=
+          OPERATING_SYSTEM=CanonicalUbuntu
+          OS_VERSION=24.04
+          ASSIGN_PUBLIC_IP=true
+          BOOT_VOLUME_SIZE=50
+          NOTIFY_EMAIL=False
+          EMAIL=abc@gmail
+          EMAIL_PASSWORD=16characterswithoutspaces
+          DISCORD_WEBHOOK=
+          EOF
+
+      - name: Intentar crear instancia
+        run: python main.py
+
+      - name: Guardar resultado si tuvo éxito
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultado-instancia
+          path: |
+            INSTANCE_CREATED
+            id_rsa
+            id_rsa.pub
+          if-no-files-found: ignore
