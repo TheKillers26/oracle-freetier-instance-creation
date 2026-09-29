@@ -36,9 +36,9 @@ jobs:
           REQUEST_WAIT_TIME_SECS=99999
           SSH_AUTHORIZED_KEYS_FILE=$PWD/id_rsa.pub
           OCI_SUBNET_ID=${{ secrets.OCI_SUBNET_ID }}
-          OCI_IMAGE_ID=
-          OPERATING_SYSTEM=CanonicalUbuntu
-          OS_VERSION=24.04
+          OCI_IMAGE_ID=ocid1.image.oc1.sa-bogota-1.aaaaaaaac72ldb6fc74gple5tr2est47lyn6vgapch77hzqhxqdjtdevrica
+          OPERATING_SYSTEM=
+          OS_VERSION=
           ASSIGN_PUBLIC_IP=true
           BOOT_VOLUME_SIZE=50
           NOTIFY_EMAIL=False
